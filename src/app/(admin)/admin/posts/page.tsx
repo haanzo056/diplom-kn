@@ -1,4 +1,4 @@
-import { PostsList } from './components/posts-list';
+import { PostsList } from '@/feature/admin/posts/PostsList';
 
 export default function PostsPage() {
   return <PostsList />;

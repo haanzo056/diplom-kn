@@ -1,4 +1,4 @@
-import { NavigationEditor } from './components/navigation-editor';
+import { NavigationEditor } from '@/feature/admin/navigation/NavigationEditor';
 
 export default function NavigationPage() {
   return <NavigationEditor />;

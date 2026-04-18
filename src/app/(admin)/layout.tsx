@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   Sidebar,
@@ -13,14 +14,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, FileText, Newspaper, Navigation, Image, Settings } from 'lucide-react';
+import { LayoutDashboard, FileText, Newspaper, Navigation, Image as ImageIcon, Settings } from 'lucide-react';
 
 const navLinks = [
   { href: '/admin', label: 'Дашборд', icon: LayoutDashboard },
   { href: '/admin/pages', label: 'Сторінки', icon: FileText },
   { href: '/admin/posts', label: 'Пости', icon: Newspaper },
   { href: '/admin/navigation', label: 'Навігація', icon: Navigation },
-  { href: '/admin/media', label: 'Медіатека', icon: Image },
+  { href: '/admin/media', label: 'Медіатека', icon: ImageIcon },
   { href: '/admin/settings', label: 'Налаштування', icon: Settings },
 ];
 
@@ -42,7 +43,8 @@ function AdminSidebar() {
       }
     >
       <SidebarHeader>
-        <div className="px-2 py-3">
+        <div className="flex items-center gap-3 px-2 py-3">
+          <Image src="/logo.png" alt="Логотип" width={32} height={32} className="shrink-0" />
           <span className="font-bold text-sm whitespace-nowrap group-data-[collapsible=icon]:hidden">
             Адмін-панель
           </span>

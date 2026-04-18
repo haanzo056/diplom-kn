@@ -51,6 +51,8 @@ model Post {
   imageId     String?
   author      User?         @relation(fields: [authorId], references: [id])
   authorId    String?
+  page        Page?         @relation(fields: [pageId], references: [id])
+  pageId      String?
   publishedAt DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -58,6 +60,7 @@ model Post {
   @@index([status])
   @@index([authorId])
   @@index([category])
+  @@index([pageId])
 }
 
 model Page {
@@ -66,6 +69,7 @@ model Page {
   slug      String        @unique
   content   Json          @default("[]")
   status    ContentStatus @default(DRAFT)
+  posts     Post[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }

@@ -39,11 +39,13 @@ export const HomePage = async () => {
   return (
     <div className="bg-[#f2f2f2]">
       {/* Hero Section */}
-      <section className="bg-[#3d63dd] px-[100px] pt-[24px] pb-[24px]">
-        <div className="max-w-[1240px] mx-auto flex gap-[20px]" style={{ height: '560px' }}>
-          {/* Left column: tall top + short bottom */}
-          <div className="flex-1 flex flex-col gap-[17px]">
-            <div className="relative overflow-hidden rounded-tl-[24px]" style={{ height: '365px' }}>
+      <section className="bg-[#3d63dd] px-4 md:px-[100px] pt-[24px] pb-[24px]">
+        <div className="max-w-[1240px] mx-auto flex flex-col md:flex-row gap-[17px] md:gap-[20px] md:h-[560px]">
+          {/* Left column */}
+          <div className="w-full md:flex-1 flex flex-col gap-[17px]">
+            <div
+              className="relative overflow-hidden rounded-[20px] md:rounded-none md:rounded-tl-[24px] h-[260px] md:h-[365px]"
+            >
               <Image
                 src="/images/bg/maybutne.png"
                 alt="Твоє майбутнє"
@@ -59,12 +61,10 @@ export const HomePage = async () => {
                 }}
               />
               <h1
-                className="absolute top-[33px] left-[33px] text-white uppercase"
+                className="absolute top-[24px] left-[24px] md:top-[33px] md:left-[33px] text-white uppercase text-[22px] md:text-[32px] tracking-[2px] md:tracking-[3px]"
                 style={{
                   fontFamily: 'var(--font-montserrat)',
-                  fontSize: '32px',
                   fontWeight: 800,
-                  letterSpacing: '3px',
                   lineHeight: 'normal',
                 }}
               >
@@ -75,10 +75,9 @@ export const HomePage = async () => {
                 світі
               </h1>
               <p
-                className="absolute bottom-[33px] left-[33px] text-white"
+                className="absolute bottom-[24px] left-[24px] md:bottom-[33px] md:left-[33px] text-white text-[16px] md:text-[20px]"
                 style={{
                   fontFamily: 'var(--font-montserrat)',
-                  fontSize: '20px',
                   fontWeight: 500,
                   letterSpacing: '-0.38px',
                   lineHeight: '150%',
@@ -90,8 +89,7 @@ export const HomePage = async () => {
 
             <Link
               href="/prep-courses"
-              className="relative overflow-hidden rounded-bl-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110"
-              style={{ height: '178px' }}
+              className="relative overflow-hidden rounded-[20px] md:rounded-none md:rounded-bl-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110 h-[150px] md:h-[178px]"
             >
               <Image
                 src="/images/bg/curses.png"
@@ -101,12 +99,11 @@ export const HomePage = async () => {
                 style={{ objectPosition: '0px -16px' }}
               />
               <span
-                className="relative"
+                className="relative text-[18px] md:text-[24px]"
                 style={{
                   color: '#FFF',
                   textShadow: '8px 8px 40px #000, 8px 8px 40px #000, 8px 8px 40px #000',
                   fontFamily: 'var(--font-montserrat)',
-                  fontSize: '24px',
                   fontWeight: 600,
                   lineHeight: '150%',
                   letterSpacing: '-0.456px',
@@ -117,12 +114,11 @@ export const HomePage = async () => {
             </Link>
           </div>
 
-          {/* Right column: 3 equal images */}
-          <div className="flex-1 flex flex-col gap-[17px]">
+          {/* Right column — 3-col grid on mobile, flex-col on desktop */}
+          <div className="w-full md:flex-1 grid grid-cols-3 md:flex md:flex-col gap-[17px]">
             <Link
               href="/rules"
-              className="relative overflow-hidden rounded-tr-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110"
-              style={{ height: '178px' }}
+              className="relative overflow-hidden rounded-[16px] md:rounded-none md:rounded-tr-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110 h-[110px] md:h-[178px]"
             >
               <Image
                 src="/images/bg/rulse.png"
@@ -132,25 +128,26 @@ export const HomePage = async () => {
               />
               <div className="absolute inset-0 bg-black/20" />
               <span
-                className="relative"
+                className="relative text-center text-[12px] md:text-[24px]"
                 style={{
                   color: '#FFF',
                   textShadow: '4px 4px 50px rgba(0,0,0,0.9), 8px 8px 40px #000',
                   fontFamily: 'var(--font-montserrat)',
-                  fontSize: '24px',
                   fontWeight: 600,
-                  lineHeight: '150%',
-                  letterSpacing: '-0.456px',
+                  lineHeight: '130%',
+                  letterSpacing: '-0.2px',
                 }}
               >
-                Правила прийому
+                Правила
+                <br className="md:hidden" />
+                <span className="hidden md:inline"> </span>
+                прийому
               </span>
             </Link>
 
             <Link
               href="/specialties"
-              className="relative overflow-hidden flex items-center justify-center transition-all duration-300 hover:brightness-110"
-              style={{ height: '178px' }}
+              className="relative overflow-hidden rounded-[16px] md:rounded-none flex items-center justify-center transition-all duration-300 hover:brightness-110 h-[110px] md:h-[178px]"
             >
               <Image
                 src="/images/bg/special.png"
@@ -159,26 +156,24 @@ export const HomePage = async () => {
                 className="object-cover"
               />
               <span
-                className="relative"
+                className="relative text-center text-[12px] md:text-[24px]"
                 style={{
                   color: '#FFF',
                   textShadow:
                     '8px 8px 40px #000, 8px 8px 40px #000, 8px 8px 40px #000, 8px 8px 40px #000',
                   fontFamily: 'var(--font-montserrat)',
-                  fontSize: '24px',
                   fontWeight: 600,
-                  lineHeight: '150%',
-                  letterSpacing: '-0.456px',
+                  lineHeight: '130%',
+                  letterSpacing: '-0.2px',
                 }}
               >
-                Спеціальності
+                Спеціаль&shy;ності
               </span>
             </Link>
 
             <Link
               href="/education"
-              className="relative overflow-hidden rounded-br-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110"
-              style={{ height: '178px' }}
+              className="relative overflow-hidden rounded-[16px] md:rounded-none md:rounded-br-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110 h-[110px] md:h-[178px]"
             >
               <Image
                 src="/images/bg/vihivna_robota.png"
@@ -187,18 +182,20 @@ export const HomePage = async () => {
                 className="object-cover"
               />
               <span
-                className="relative"
+                className="relative text-center text-[12px] md:text-[24px]"
                 style={{
                   color: '#FFF',
                   textShadow: '4px 4px 50px rgba(0,0,0,0.9), 8px 8px 40px #000',
                   fontFamily: 'var(--font-montserrat)',
-                  fontSize: '24px',
                   fontWeight: 600,
-                  lineHeight: '150%',
-                  letterSpacing: '-0.456px',
+                  lineHeight: '130%',
+                  letterSpacing: '-0.2px',
                 }}
               >
-                Виховна робота
+                Виховна
+                <br className="md:hidden" />
+                <span className="hidden md:inline"> </span>
+                робота
               </span>
             </Link>
           </div>
@@ -208,12 +205,10 @@ export const HomePage = async () => {
       {/* Specialties Section */}
       <section className="py-[40px]">
         <h2
-          className="text-center mb-[40px]"
+          className="text-center mb-[32px] md:mb-[40px] text-[26px] md:text-[40px] tracking-[2px] md:tracking-[4px] px-4"
           style={{
             fontFamily: 'var(--font-montserrat)',
-            fontSize: '40px',
             fontWeight: 800,
-            letterSpacing: '4px',
             textTransform: 'uppercase',
             color: '#18222e',
             lineHeight: 'normal',
@@ -221,13 +216,13 @@ export const HomePage = async () => {
         >
           Спеціальності
         </h2>
-        <div className="flex gap-[32px] px-[100px] justify-center">
+        {/* horizontal scroll on mobile, centered flex on desktop */}
+        <div className="flex gap-[16px] md:gap-[32px] px-4 md:px-[100px] md:justify-center overflow-x-auto snap-x snap-mandatory pb-4 md:pb-0 scrollbar-none">
           {SPECIALTIES.map((spec) => (
             <Link
               key={spec.code}
               href={`/specialties/${spec.slug}`}
-              className="relative overflow-hidden rounded-[24px] flex flex-col items-center justify-end p-[20px] group"
-              style={{ width: '392px', height: '467px', flexShrink: 0 }}
+              className="relative overflow-hidden rounded-[20px] md:rounded-[24px] flex flex-col items-center justify-end p-[16px] md:p-[20px] group snap-center shrink-0 w-[260px] md:w-[392px] h-[360px] md:h-[467px]"
             >
               <Image
                 src={spec.image}
@@ -236,7 +231,7 @@ export const HomePage = async () => {
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div
-                className="absolute inset-0 rounded-[24px]"
+                className="absolute inset-0 rounded-[20px] md:rounded-[24px]"
                 style={{
                   backgroundImage:
                     'linear-gradient(179.87deg, rgba(24,34,46,0) 47.439%, rgb(24,34,46) 95.422%)',
@@ -244,9 +239,9 @@ export const HomePage = async () => {
               />
               <div className="relative flex flex-col gap-[8px] text-center text-white w-full">
                 <p
+                  className="text-[20px] md:text-[24px]"
                   style={{
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: '24px',
                     fontWeight: 700,
                     lineHeight: 'normal',
                   }}
@@ -254,9 +249,9 @@ export const HomePage = async () => {
                   {spec.code}
                 </p>
                 <p
+                  className="text-[16px] md:text-[20px]"
                   style={{
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: '20px',
                     fontWeight: 600,
                     lineHeight: 'normal',
                   }}
@@ -272,12 +267,10 @@ export const HomePage = async () => {
       {/* News Section */}
       <section className="py-[40px]">
         <h2
-          className="text-center mb-[40px]"
+          className="text-center mb-[32px] md:mb-[40px] text-[26px] md:text-[40px] tracking-[2px] md:tracking-[4px] px-4"
           style={{
             fontFamily: 'var(--font-montserrat)',
-            fontSize: '40px',
             fontWeight: 800,
-            letterSpacing: '4px',
             textTransform: 'uppercase',
             color: '#18222e',
             lineHeight: 'normal',
@@ -291,17 +284,17 @@ export const HomePage = async () => {
             Новини відсутні
           </p>
         ) : (
-          <div className="grid grid-cols-3 gap-[32px] px-[100px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[20px] md:gap-[32px] px-4 md:px-[100px]">
             {posts.map((post) => (
               <Link
                 key={post.id}
                 href={`/news/${post.slug}`}
-                className="bg-white rounded-[24px] overflow-hidden flex flex-col"
+                className="bg-white rounded-[20px] md:rounded-[24px] overflow-hidden flex flex-col"
                 style={{
                   boxShadow: '0px 0px 2px rgba(29,29,29,0.06)',
                 }}
               >
-                <div className="relative shrink-0" style={{ height: '260px' }}>
+                <div className="relative shrink-0 h-[200px] md:h-[260px]">
                   {post.image?.url ? (
                     <Image src={post.image.url} alt={post.title} fill className="object-cover" />
                   ) : (
@@ -318,15 +311,14 @@ export const HomePage = async () => {
                       />
                     </div>
                   )}
-                  <div className="absolute top-[20px] left-[20px]">
+                  <div className="absolute top-[16px] left-[16px] md:top-[20px] md:left-[20px]">
                     <span
-                      className="inline-flex items-center justify-center capitalize text-white"
+                      className="inline-flex items-center justify-center capitalize text-white text-[13px] md:text-[16px]"
                       style={{
                         background: '#3164e6',
-                        borderRadius: '12px',
-                        padding: '8px 12px',
+                        borderRadius: '10px',
+                        padding: '6px 10px',
                         fontFamily: 'Inter, sans-serif',
-                        fontSize: '16px',
                         fontWeight: 600,
                         lineHeight: 'normal',
                       }}
@@ -336,9 +328,9 @@ export const HomePage = async () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-[12px] p-[20px] flex-1">
+                <div className="flex flex-col gap-[12px] p-[16px] md:p-[20px] flex-1">
                   <div className="flex items-center gap-[8px]">
-                    <CalendarDays style={{ width: '24px', height: '24px', color: '#c0c0c0' }} />
+                    <CalendarDays style={{ width: '20px', height: '20px', color: '#c0c0c0' }} />
                     <span
                       className="capitalize"
                       style={{
@@ -354,10 +346,9 @@ export const HomePage = async () => {
                   </div>
 
                   <h3
-                    className="line-clamp-2 capitalize"
+                    className="line-clamp-2 capitalize text-[17px] md:text-[20px]"
                     style={{
                       fontFamily: 'Inter, sans-serif',
-                      fontSize: '20px',
                       fontWeight: 600,
                       color: '#000',
                       lineHeight: 'normal',
@@ -385,7 +376,7 @@ export const HomePage = async () => {
                     <span
                       style={{
                         fontFamily: 'Inter, sans-serif',
-                        fontSize: '18px',
+                        fontSize: '16px',
                         fontWeight: 600,
                         color: '#3164e6',
                         lineHeight: 'normal',
@@ -393,7 +384,7 @@ export const HomePage = async () => {
                     >
                       Детальніше
                     </span>
-                    <ArrowRight style={{ width: '24px', height: '24px', color: '#3164e6' }} />
+                    <ArrowRight style={{ width: '20px', height: '20px', color: '#3164e6' }} />
                   </div>
                 </div>
               </Link>

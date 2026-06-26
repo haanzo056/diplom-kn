@@ -11,7 +11,7 @@ export const Dashboard = () => {
   return (
     <div>
       <div className="flex items-center gap-4 mb-8">
-        <Image src="/logo.png" alt="Логотип" width={64} height={64} />
+        <Image src="/logo_w.png" alt="Логотип" width={64} height={64} />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">ВСП «ФКЗІ ГУІТС»</h1>
           <p className="text-sm text-gray-500">Панель керування</p>

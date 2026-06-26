@@ -46,7 +46,7 @@ function AdminSidebar() {
     >
       <SidebarHeader>
         <div className="flex items-center gap-3 px-2 py-3">
-          <Image src="/logo.png" alt="Логотип" width={32} height={32} className="shrink-0" />
+          <Image src="/logo_w.png" alt="Логотип" width={32} height={32} className="shrink-0" />
           <span className="font-bold text-sm whitespace-nowrap group-data-[collapsible=icon]:hidden">
             Адмін-панель
           </span>

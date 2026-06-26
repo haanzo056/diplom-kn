@@ -6,7 +6,7 @@ export const LoginPage = () => {
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between bg-[#0f172a] px-12 py-14">
         <div className="flex items-center gap-3">
-          <Image src="/logo.png" alt="Logo" width={50} height={50} />
+          <Image src="/logo_w.png" alt="Logo" width={50} height={50} />
           <span className="text-sm font-semibold text-white tracking-wide">Адмін-панель</span>
         </div>
 

@@ -1,5 +1,5 @@
-import PostBlockRenderer from '@/src/helpers/PostBlockRenderer';
-import { PostBlock } from '@/src/lib/api/admin/post/new/api-new-post';
+import PostBlockRenderer from '@/helpers/PostBlockRenderer';
+import { PostBlock } from '@/lib/api/admin/post/api-get-posts';
 
 type PostArticleProps = {
   post: {

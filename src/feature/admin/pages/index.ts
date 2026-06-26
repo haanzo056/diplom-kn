@@ -1,2 +1,2 @@
-export * from './components/PageForm';
+export * from './newPage/components/PageForm';
 export * from './components/PagesList';

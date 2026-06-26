@@ -1,0 +1,501 @@
+3.1 Розробка плану роботи
+
+Перед початком реалізації веб-застосунку я склала чіткий план роботи, що дозволило структурувати процес розробки та визначити послідовність етапів. На основі вимог, сформованих у розділі 1.5, та інформаційної архітектури, описаної у розділі 2.1, я визначила перелік сторінок та функцій, які потрібно реалізувати технічно.
+
+Повна структура сайту розроблена у вигляді карти сайту, що наведена на рисунку 3.1. Вона охоплює всі розділи публічної частини: «Коледж» (новини, керівництво, циклові комісії, виховна робота, сторінка пам'яті, атестація педагогічних працівників, стратегія розвитку, положення про коледж, педагогічна рада), «Вступнику» (правила прийому, академічна траєкторія здобувача освіти, підготовчі курси), «Студенту» (організація навчального процесу, розклад занять, силабуси, рейтинг студентів, каталог вибіркових дисциплін, рада студентського самоврядування, дипломне проектування, практична підготовка), «Публічна інформація» (структура та органи управління, нормативна база, сертифікати та ліцензії, розмір плати за навчання, вакантні посади, мова освітнього процесу, бюджет та фінансовий звіт, протидія булінгу), «Контакти» та англомовний розділ «For foreigners» (About us, Contact information, Admission rules, Faculties and specialties). Кожен із цих розділів містить підсторінки з відповідним контентом, а сама структура навігації не «зашита» в код, а зберігається в базі даних і редагується адміністратором.
+
+Рисунок 3.1 – Карта сайту коледжу
+
+CRM-панель адміністратора забезпечує керування всіма розділами сайту: створення, редагування та видалення сторінок і публікацій, конструювання вмісту з блоків, керування медіафайлами, налаштування навігаційного меню та перегляд зведеної статистики. Детальні сценарії роботи адміністратора описані у розділі 2.2.
+
+План розробки передбачав такі технічні етапи: проєктування дизайну у Figma (виконано у розділі 2), реалізація коду у Visual Studio Code з використанням Next.js (App Router) та Tailwind CSS 4, проєктування схеми бази даних PostgreSQL (хмарний сервіс Neon — serverless Postgres) та підключення до неї через Prisma ORM з адаптером @prisma/adapter-neon, реалізація власного механізму авторизації на основі JWT-сесій (бібліотеки jose та bcryptjs), побудова інтерфейсу на основі компонентної бібліотеки shadcn/ui, реалізація блокового конструктора публікацій з підтримкою перетягування (@dnd-kit) та форматованого тексту (TipTap), а також розгортання застосунку на платформі Vercel із підключенням до хмарної бази даних Neon.
+
+
+3.2 Розробка дизайну
+
+Дизайн є важливим етапом розробки, оскільки зовнішній вигляд та зручність інтерфейсу формують перше враження про веб-сайт. Сайт освітнього закладу повинен виглядати офіційно, викликати довіру та водночас бути зрозумілим для різних категорій відвідувачів. Усі макети розроблено у програмі Figma відповідно до інформаційної архітектури (розділ 2.1) та UX-рішень адміністративної панелі (розділ 2.4).
+
+
+3.2.1 Кольорова палітра
+
+При виборі кольорової схеми я враховувала, що сайт коледжу — це офіційний ресурс, який має асоціюватися з надійністю, освітою та професіоналізмом, але водночас не виглядати застарілим чи занадто «казенним». Тому за основу взято єдиний насичений синій акцент у поєднанні з нейтральною сірою шкалою, а яскраві кольори залишено лише для декоративних елементів головної сторінки. Розроблена палітра кольорів наведена на рисунку 3.2.
+
+Рисунок 3.2 – Кольорова палітра сайту коледжу
+
+Палітра організована за роллю кольору в інтерфейсі.
+
+Основний акцентний колір — насичений ярко-синій (#3D5AF1) з темнішим відтінком для стану наведення (#2d4ae0). Він використовується для інтерактивних елементів: кнопок, активних посилань, індикаторів, кнопки відкриття мобільного меню та смужки-акценту під шапкою сайту. Синій колір традиційно асоціюється з освітою, стабільністю та довірою, що робить його природним вибором для сайту навчального закладу.
+
+Темні відтінки синього — глибокий темно-синій майже чорний (#0d1b6e) та темний слейтовий (#0f172a) — застосовано для бічної панелі CRM-панелі, лівої колонки сторінки входу та футера. Вони створюють відчуття структурованості та чітко відмежовують навігаційні й службові зони від основного контенту.
+
+Світлий нейтральний фон (#f4f5f7) використано для секцій зі списками новин і карток публікацій — він злегка відокремлює контентні блоки від білого тла сторінки, не створюючи зайвого контрасту.
+
+Решта інтерфейсу побудована на нейтральній сірій шкалі (відтінки slate/gray бібліотеки Tailwind CSS, реалізовані через систему дизайн-токенів shadcn/ui у форматі oklch: --background, --foreground, --muted, --border, --accent тощо). Ця шкала відповідає за текст, роздільники, фони карток, рамки полів форм і другорядні елементи інтерфейсу — вона не конкурує з акцентним синім, але забезпечує чітку візуальну ієрархію.
+
+Окрему групу складають яскраві градієнтні кольори (#7C93FF, #A6C8FF, #C7D6FF, #FF9FFC, #8b5cf6), які застосовуються виключно у декоративних анімованих фонових елементах головної сторінки та сторінки 404 (компоненти Lightfall і GradientText) — вони додають сайту сучасності та динамічності, не впливаючи на читабельність основного контенту.
+
+
+3.2.2 Типографіка
+
+Вибір шрифту є одним із ключових рішень у дизайні, оскільки типографіка безпосередньо впливає на читабельність, сприйняття бренду та загальний тон комунікації. Для сайту коледжу обрано єдину шрифтову пару — гарнітуру Inter, яка використовується одночасно і для заголовків, і для основного тексту.
+
+Inter — шрифт, розроблений Расмусом Андерссоном спеціально для екранного відображення. Він оптимізований для читання невеликим кеглем на дисплеях з різною роздільною здатністю: широкі літери, відкриті апертури та рівний міжлітерний інтервал забезпечують комфортне сприйняття довгих текстів — новин, документів, описів спеціальностей. Саме тому Inter є стандартним вибором для інтерфейсів продуктів таких компаній як GitHub, Linear та Vercel.
+
+На відміну від класичного прийому поєднання двох контрастних гарнітур (наприклад, геометричного гротеска для заголовків і гуманістичного шрифту для тексту), у цьому проєкті свідомо обрано один шрифт для всього інтерфейсу — це спрощує підтримку дизайн-системи, гарантує візуальну єдність публічної частини сайту й адміністративної панелі та зменшує обсяг шрифтових файлів, що завантажуються в браузер. Технічно це реалізовано підключенням Inter через next/font/google з прив'язкою до CSS-змінної --font-sans, яка водночас використовується і як --font-heading, і як базовий шрифт сторінки. Розроблена типографічна шкала наведена на рисунку 3.3.
+
+Рисунок 3.3 – Типографічна шкала на основі шрифту Inter
+
+
+3.2.3 Макети сторінок
+
+На основі затвердженої кольорової палітри та типографіки розроблено макети всіх основних сторінок сайту та екранів CRM-панелі. Нижче наведено ключові з них, що слугували безпосередньою основою для написання коду.
+
+Рисунок 3.4 – Макет головної сторінки сайту коледжу
+
+Рисунок 3.5 – Макет адміністративної панелі CRM (дашборд та конструктор публікацій)
+
+Рисунок 3.6 – Макет сторінки новин та детальної публікації
+
+Затверджені макети стали основою для подальшої реалізації — кожен компонент інтерфейсу написано відповідно до розробленого дизайну без істотних відхилень від затвердженої дизайн-системи.
+
+
+3.3 Розробка веб-застосунку
+
+3.3.1 Структура проєкту та налаштування середовища
+
+Після завершення етапу проєктування я перейшла до реалізації застосунку. Основним фреймворком обрано Next.js (App Router) — він надає маршрутизацію, серверний рендеринг (SSR), серверні дії (Server Actions) та API Routes в єдиному проєкті, що усуває потребу в окремому backend-сервері.
+
+Структура директорій організована за принципом feature-sliced design і відповідає карті сайту (рисунок 3.1):
+
+Лістинг 3.1 – Структура директорій проєкту
+
+src/
+├── app/
+│   ├── (public)/                # Публічні сторінки (групове розташування маршрутів)
+│   │   ├── [...slug]/           # Динамічні сторінки й публікації за slug із БД
+│   │   ├── news/[slug]/         # Сторінка окремої новини
+│   │   ├── contacts/, management/, foreigners/...
+│   ├── (admin)/admin/           # CRM-панель адміністратора
+│   │   ├── dashboard/
+│   │   ├── pages/
+│   │   ├── posts/
+│   │   ├── media/
+│   │   ├── navigation/
+│   │   └── settings/
+│   ├── api/                     # API Routes (posts, pages, media, navigation)
+│   └── actions/auth.ts          # Server Actions: вхід і вихід адміністратора
+├── feature/                     # Бізнес-логіка фіч (admin/*, public/*, news/*)
+├── components/                  # React-компоненти (ui/, blocks/, layouts/, bg/)
+├── lib/                         # Prisma-клієнт, сесії, API-хуки, утиліти
+├── providers/                   # React Query, i18n
+└── generated/prisma/            # Згенерований типізований Prisma Client
+
+Для роботи з PostgreSQL використано Prisma ORM — вона генерує типізований клієнт на основі схеми та спрощує написання запитів. Оскільки базою даних слугує хмарний сервіс Neon (serverless PostgreSQL), підключення налаштовано через офіційний адаптер @prisma/adapter-neon і пакет @neondatabase/serverless, що дозволяє ефективно працювати з пулом з'єднань у безсерверному середовищі. Рядок підключення задається змінною середовища DATABASE_URL у файлі .env.
+
+Лістинг 3.1а – Ініціалізація Prisma-клієнта (src/lib/prisma.ts)
+
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+function createPrismaClient() {
+  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
+  return new PrismaClient({ adapter });
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+Створення єдиного екземпляра клієнта через globalThis запобігає вичерпанню пулу з'єднань під час гарячого перезавантаження (Hot Module Replacement) у режимі розробки — це типова рекомендована практика для Prisma в застосунках Next.js.
+
+
+3.3.2 Схема бази даних
+
+База даних PostgreSQL описана у файлі prisma/schema.prisma і містить п'ять основних моделей: User (користувачі/адміністратори), Post (публікації — новини, статті, оголошення тощо), Page (сторінки сайту), MediaFile (медіафайли) та NavigationItem (пункти навігаційного меню), а також три перелічувані типи: Role, ContentStatus і PostCategory.
+
+Лістинг 3.2 – Схема бази даних (prisma/schema.prisma, скорочено)
+
+enum Role { ADMIN EDITOR }
+
+enum ContentStatus { DRAFT PUBLISHED }
+
+enum PostCategory {
+  NEWS ARTICLE TUTORIAL REVIEW OPINION INTERVIEW ANNOUNCEMENT OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String?
+  role         Role     @default(EDITOR)
+  posts        Post[]
+}
+
+model Post {
+  id          String        @id @default(cuid())
+  title       String
+  excerpt     String?
+  slug        String        @unique
+  status      ContentStatus @default(DRAFT)
+  blocks      Json          @default("[]")
+  category    PostCategory  @default(OTHER)
+  image       MediaFile?    @relation(fields: [imageId], references: [id])
+  author      User?         @relation(fields: [authorId], references: [id])
+  page        Page?         @relation(fields: [pageId], references: [id])
+  publishedAt DateTime?
+}
+
+model Page {
+  id        String        @id @default(cuid())
+  title     String
+  slug      String        @unique
+  content   Json          @default("[]")
+  status    ContentStatus @default(DRAFT)
+  settings  Json          @default("{}")
+  posts     Post[]
+}
+
+model MediaFile {
+  id       String @id @default(cuid())
+  name     String
+  url      String
+  mimeType String
+  size     Int
+  posts    Post[]
+}
+
+model NavigationItem {
+  id        String           @id @default(cuid())
+  label     String
+  href      String
+  order     Int              @default(0)
+  parentId  String?
+  parent    NavigationItem?  @relation("NavigationTree", fields: [parentId], references: [id])
+  children  NavigationItem[] @relation("NavigationTree")
+}
+
+Поле status типу ContentStatus у моделях Post і Page дозволяє зберігати чернетки (DRAFT) і публікувати їх у потрібний момент (PUBLISHED) — це відповідає функціональній вимозі щодо керованості публікацій, визначеній у розділі 1.5. Поля blocks і content типу Json зберігають вміст сторінки чи публікації у вигляді впорядкованого масиву блоків (заголовок, текст, зображення, цитата, відео, список тощо), сформованого у CRM-конструкторі — саме це є технічною основою гнучкого редагування контенту, описаного у підрозділі 2.4. Поле settings у моделі Page (додане окремою міграцією add_page_settings) зберігає додаткові налаштування відображення сторінки у форматі JSON.
+
+Самопосилання parentId/children у моделі NavigationItem реалізує дворівневе дерево навігаційного меню: верхній рівень відповідає розділам сайту («Коледж», «Вступнику», «Студенту» тощо), а вкладені елементи — підсторінкам. Завдяки цьому структура меню повністю керується адміністратором через CRM-панель, а не «зашита» у коді шаблону, як це часто буває в типових студентських проєктах.
+
+
+3.3.3 Шапка та навігація сайту
+
+Шапка сайту є глобальним клієнтським компонентом, що відображається на кожній публічній сторінці через кореневий layout. На відміну від статичного списку посилань, її навігаційне меню формується динамічно на основі даних із таблиці NavigationItem.
+
+Лістинг 3.3 – Отримання навігації з бази даних (src/feature/public/navigation/queries.ts)
+
+export type NavLink = { id: string; label: string; href: string };
+export type NavGroup = NavLink & { children: NavLink[] };
+
+export const getNavigation = cache(async (): Promise<NavGroup[]> => {
+  const items = await prisma.navigationItem.findMany({ orderBy: { order: 'asc' } });
+
+  return items
+    .filter((item) => !item.parentId)
+    .map((group) => ({
+      id: group.id,
+      label: group.label,
+      href: group.href,
+      children: items
+        .filter((item) => item.parentId === group.id)
+        .map((link) => ({ id: link.id, label: link.label, href: link.href })),
+    }));
+});
+
+Лістинг 3.4 – Фрагмент компонента шапки сайту (src/components/layouts/public-header.tsx)
+
+export const PublicHeader = ({ navigation }: PublicHeaderProps) => {
+  const [open, setOpen] = useState(false);
+  const navColumns = buildNavColumns(navigation);
+
+  return (
+    <>
+      <header className="border-b bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-3 shrink-0">
+            <Image src="/logo_b.png" alt="ФКЗІ" width={52} height={52} />
+            <span className="text-sm font-semibold text-slate-800 leading-snug">
+              Фаховий Коледж<br />Зв'язку та Інформатизації
+            </span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-8">
+            {NAV_LINKS.map((link) => (
+              <Link key={link.href} href={link.href}
+                className="text-sm text-slate-700 hover:text-slate-900 font-medium">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <button onClick={openMenu} aria-label="Відкрити меню"
+            className="w-10 h-10 rounded-full bg-[#3D5AF1] flex items-center justify-center text-white hover:bg-[#2d4ae0]">
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="h-1 bg-[#3D5AF1] animate-slide-in-left" />
+      </header>
+      {/* повноекранне мобільне меню з анімацією появи та переліком розділів і соцмереж */}
+    </>
+  );
+};
+
+Сталий заголовок (sticky top-0) забезпечує фіксацію шапки під час прокручування, а синя смужка-акцент (h-1 bg-[#3D5AF1]) з анімацією animate-slide-in-left додає шапці фірмового вигляду. На мобільних пристроях навігація замінюється кнопкою, яка відкриває повноекранне меню з анімованою появою пунктів та посиланнями на соціальні мережі — це реалізує вимогу адаптивності з розділу 1.5. Повний перелік розділів і підрозділів адміністратор формує самостійно через сторінку «Навігація» CRM-панелі (/admin/navigation), де пункти меню можна перетягувати й вкладати один в інший за допомогою бібліотеки @dnd-kit.
+
+Рисунок 3.7 – Реалізована шапка сайту та мобільне меню у браузері
+
+
+3.3.4 Сторінка новин та публікацій
+
+Сторінка новин входить до розділу «Коледж» відповідно до карти сайту (рисунок 3.1) і відображає список публікацій у вигляді карток із зображенням, заголовком, датою та коротким описом. Кожна публікація — це запис моделі Post зі статусом PUBLISHED; її вміст зберігається у вигляді масиву типізованих блоків і рендериться спеціальним компонентом BlockRenderer.
+
+Лістинг 3.5 – Сторінка окремої новини (app/(public)/news/[slug]/page.tsx)
+
+export default async function Page({ params }: Props) {
+  const { slug } = await params;
+  return <NewsPostPage slug={slug} />;
+}
+
+Лістинг 3.6 – Завантаження публікації та рендеринг блоків (фрагмент src/feature/news/newsPost/index.tsx)
+
+const NewsPostPage = ({ slug }: { slug: string }) => {
+  const { data: post, isLoading, isError } = useGetPostBySlug(slug);
+
+  if (isLoading) return <p className="text-slate-400">Загрузка...</p>;
+  if (isError || !post) return <p className="text-red-400">Пост не найден.</p>;
+
+  return (
+    <div className="bg-[#f4f5f7] min-h-screen py-10">
+      <main className="flex-1 min-w-0">
+        <h1 className="text-[32px] md:text-[40px] font-bold text-slate-900 mb-6">
+          {post.title}
+        </h1>
+        {post.image && <img src={post.image} alt={post.title} className="rounded-2xl" />}
+        <BlockRenderer blocks={post.blocks} />
+      </main>
+    </div>
+  );
+};
+
+Лістинг 3.7 – Рендеринг блоку «попередження» компонентом BlockRenderer (src/components/blocks/BlockRenderer.tsx)
+
+case 'warning':
+  return (
+    <div key={index} className="bg-amber-50 border border-amber-200 rounded-xl p-4 my-4 flex gap-3">
+      <span className="text-amber-600 text-lg shrink-0">⚠</span>
+      <p className="text-amber-900 text-sm leading-relaxed">{block.value}</p>
+    </div>
+  );
+
+Сторінка реалізована як клієнтський компонент, що отримує дані через хук useGetPostBySlug бібліотеки React Query — це забезпечує кешування запитів, індикатори завантаження та автоматичне оновлення даних після редагування публікації в CRM-панелі. Компонент BlockRenderer перетворює кожен елемент масиву blocks (типи heading, text, quote, code, list, video, divider, warning та інші) у відповідну розмітку: текстові блоки рендеряться через TiptapViewer із підтримкою форматування, відеоблоки автоматично перетворюють посилання YouTube/Vimeo у вбудований плеєр (iframe). Такий підхід дозволяє адміністратору гнучко конструювати вміст новини без написання коду — це і є технічна реалізація UX-рішень адміністративної панелі, описаних у підрозділі 2.4.
+
+Рисунок 3.8 – Реалізована сторінка новин та детальної публікації у браузері
+
+
+3.3.5 Медіатека
+
+Розділ «Медіатека» дозволяє адміністратору завантажувати зображення, документи (PDF) та інші файли, які потім можна додавати до сторінок і публікацій через конструктор. Файли фізично зберігаються у директорії public/uploads, а їхні метадані — у таблиці MediaFile бази даних.
+
+Лістинг 3.8 – API-маршрут завантаження медіафайлу (src/app/api/media/route.ts)
+
+export async function POST(req: NextRequest) {
+  const formData = await req.formData();
+  const file = formData.get('file') as File;
+  if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 });
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const uploadsDir = process.env.UPLOADS_PATH ?? path.join(process.cwd(), 'public', 'uploads');
+  await mkdir(uploadsDir, { recursive: true });
+
+  const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+  await writeFile(path.join(uploadsDir, safeName), buffer);
+
+  const media = await prisma.mediaFile.create({
+    data: {
+      name: file.name,
+      url: `/uploads/${safeName}`,
+      mimeType: file.type,
+      size: file.size,
+    },
+  });
+
+  return NextResponse.json(media);
+}
+
+Ім'я файлу очищується регулярним виразом (заміна неприпустимих символів на «_») та доповнюється часовою міткою Date.now() — це унеможливлює конфлікти імен і атаки шляхом підміни шляху (path traversal). Поля mimeType і size зберігаються автоматично на основі метаданих завантаженого файлу та використовуються в інтерфейсі медіатеки для фільтрації за типом (зображення/документи) і відображення розміру файлу.
+
+Рисунок 3.9 – Інтерфейс медіатеки CRM-панелі: сітка завантажених файлів
+
+
+3.3.6 Авторизація адміністратора
+
+Захист CRM-панелі реалізовано не через готове рішення на кшталт NextAuth.js, а через власний легкий механізм авторизації на основі Server Actions і JWT-сесій. Пароль адміністратора зберігається у хешованому вигляді (bcryptjs), а сесія підписується та перевіряється бібліотекою jose — JWT зберігається у httpOnly-cookie, що унеможливлює доступ до нього з клієнтського JavaScript.
+
+Лістинг 3.9 – Серверна дія входу в систему (src/app/actions/auth.ts)
+
+export async function login(_state: LoginState, formData: FormData): Promise<LoginState> {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  if (!email || !password) return { error: 'Введіть email та пароль' };
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || !user.passwordHash) return { error: 'Невірний email або пароль' };
+
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) return { error: 'Невірний email або пароль' };
+
+  await createSession(user.id, user.role);
+  redirect('/admin');
+}
+
+export async function logout() {
+  await deleteSession();
+  redirect('/login');
+}
+
+Лістинг 3.10 – Створення та перевірка JWT-сесії (src/lib/session.ts)
+
+const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
+
+export async function encrypt(payload: SessionPayload) {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(encodedKey);
+}
+
+export async function createSession(userId: string, role: string) {
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const session = await encrypt({ userId, role, expiresAt });
+  (await cookies()).set('session', session, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: expiresAt,
+    sameSite: 'lax',
+    path: '/',
+  });
+}
+
+export async function getSession() {
+  const session = (await cookies()).get('session')?.value;
+  return decrypt(session);
+}
+
+Форма входу побудована на хуку useActionState з React 19, що дозволяє відображати стан очікування та помилки сервера без додаткового стейт-менеджменту на клієнті:
+
+Лістинг 3.11 – Форма входу адміністратора (фрагмент src/feature/admin/login/components/LoginForm.tsx)
+
+export function LoginForm() {
+  const [state, action, pending] = useActionState(login, undefined);
+
+  return (
+    <form action={action} className="flex flex-col gap-5 w-full">
+      {state?.error && (
+        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+          {state.error}
+        </div>
+      )}
+      <input id="email" name="email" type="email" required />
+      <input id="password" name="password" type="password" required />
+      <button type="submit" disabled={pending}>
+        {pending ? 'Зачекайте...' : 'Увійти'}
+      </button>
+    </form>
+  );
+}
+
+Захист маршрутів /admin/* реалізовано на рівні кореневого layout групи маршрутів (admin): перед рендерингом сторінки виконується виклик getSession(), і якщо дійсна сесія відсутня, користувача перенаправляє на сторінку /login. Сесія дійсна 7 діб, після чого користувачу потрібно увійти повторно — це балансує між зручністю (не треба входити щодня) та безпекою (обмежений строк дії токена).
+
+Рисунок 3.10 – Сторінка входу до CRM-панелі
+
+
+3.3.7 CRM-панель адміністратора
+
+Адміністративна панель побудована відповідно до UX-рішень, описаних у підрозділі 2.4, на основі компонентної бібліотеки shadcn/ui. Після авторизації адміністратор потрапляє на дашборд із навігацією по розділах та зведеною статистикою.
+
+Лістинг 3.12 – Отримання статистики для дашборду (фрагмент src/feature/admin/dashboard/components/dashboard.tsx)
+
+export const Dashboard = async () => {
+  const [pagesTotal, pagesPublished, postsTotal, postsPublished, mediaTotal, recentPages, recentPosts] =
+    await Promise.all([
+      prisma.page.count(),
+      prisma.page.count({ where: { status: 'PUBLISHED' } }),
+      prisma.post.count(),
+      prisma.post.count({ where: { status: 'PUBLISHED' } }),
+      prisma.mediaFile.count(),
+      prisma.page.findMany({ orderBy: { updatedAt: 'desc' }, take: 5,
+        select: { id: true, title: true, status: true, updatedAt: true } }),
+      prisma.post.findMany({ orderBy: { updatedAt: 'desc' }, take: 5,
+        select: { id: true, title: true, status: true, updatedAt: true } }),
+    ]);
+  // ...формування карток "Сторінки", "Пости", "Медіатека" та списку останніх змінених записів
+};
+
+Ліва бокова панель (компонент Sidebar бібліотеки shadcn/ui, з власною темною кольоровою схемою на основі #0f172a) забезпечує швидкий перехід між розділами: «Дашборд», «Сторінки», «Пости», «Навігація», «Медіатека», «Налаштування». Найскладнішою частиною CRM є блоковий конструктор публікацій PostConstructor, який реалізує вимоги до гнучкого редагування контенту з підрозділу 2.4.
+
+Лістинг 3.13 – Перелік типів блоків конструктора (фрагмент src/feature/admin/posts/constructor/const.tsx)
+
+export const POST_COMPONENTS: PostComponent[] = [
+  {
+    key: '0', name: 'heading', label: 'Заголовок', icon: <Heading1 className="w-4 h-4" />,
+    component: (value, onChange) => (
+      <Input value={value} onChange={(e) => onChange(e.target.value)}
+        placeholder="Введите заголовок..." />
+    ),
+  },
+  {
+    key: '1', name: 'text', label: 'Текст', icon: <Type className="w-4 h-4" />,
+    component: (value, onChange) => <TextField value={value} onChange={onChange} />,
+  },
+  // далі йдуть блоки: зображення, цитата, список, відео, карусель, код,
+  // попередження, розділювач — кожен зі своїм редактором значення
+];
+
+Лістинг 3.14 – Сортування блоків перетягуванням (фрагмент src/feature/admin/posts/constructor/PostConstructor.tsx)
+
+const SortableItem = ({ id, onDelete, children }: SortableItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <button {...listeners}><GripVertical className="w-4 h-4" /></button>
+      {children}
+      <button onClick={onDelete}><Trash2 className="w-4 h-4" /></button>
+    </div>
+  );
+};
+
+Конструктор побудований на бібліотеках @dnd-kit/core та @dnd-kit/sortable: кожен блок є елементом, який можна перетягувати мишею або клавіатурою (KeyboardSensor), змінюючи порядок публікації в реальному часі. Текстові блоки редагуються у вбудованому WYSIWYG-редакторі на основі TipTap із підтримкою форматування, посилань, виділення коду та вирівнювання тексту. Форма керується бібліотекою react-hook-form, а збереження публікації виконується мутаціями React Query (useCreatePost, useUpdatePost) з відповідними сповіщеннями через бібліотеку sonner. Чекбокс або перемикач статусу публікації реалізує можливість зберігати чернетку — якщо обрано статус DRAFT, запис не потрапляє на публічну частину сайту (відповідний фільтр status: 'PUBLISHED' застосовується в усіх публічних запитах).
+
+Рисунок 3.11 – Інтерфейс CRM-панелі: дашборд та конструктор публікацій
+
+
+3.3.8 Розгортання застосунку
+
+На відміну від класичного підходу з контейнеризацією через Docker, для цього проєкту обрано розгортання на платформі Vercel, яка є офіційною хмарною платформою для застосунків Next.js і нативно підтримує серверний рендеринг, API Routes та Server Actions без потреби в окремому сервері чи налаштуванні контейнерів.
+
+Базою даних слугує хмарний сервіс Neon — серверless PostgreSQL, який автоматично масштабує обчислювальні ресурси відповідно до навантаження та підтримує «холодний старт» з нульовим споживанням ресурсів у періоди простою. Підключення до Neon виконується через спеціалізований драйвер @neondatabase/serverless та адаптер Prisma @prisma/adapter-neon (підрозділ 3.3.1) — це дозволяє ефективно працювати з обмеженою кількістю з'єднань у безсерверному середовищі виконання.
+
+Усі чутливі параметри — рядок підключення до бази даних DATABASE_URL та секретний ключ для підпису сесій SESSION_SECRET — зберігаються у змінних середовища платформи Vercel і не потрапляють у репозиторій (для локальної розробки вони визначаються у файлі .env, доданому до .gitignore).
+
+Розгортання виконується автоматично при кожному пуші в основну гілку репозиторію: Vercel збирає проєкт командою next build, застосовує генерацію Prisma-клієнта (prisma generate) та публікує нову версію застосунку. Перед першим запуском на продакшн-середовищі застосовуються міграції бази даних командою
+
+npx prisma migrate deploy
+
+яка створює всі таблиці відповідно до схеми з підрозділу 3.3.2, а наповнення довідковими даними — структурою навігаційного меню, типовими сторінками та публікаціями — виконується допоміжними скриптами prisma/seed.ts і scripts/seed-navigation.ts (запускаються командами npm run seed та npx tsx scripts/seed-navigation.ts відповідно).
+
+Такий підхід — без власного сервера, без Docker і без адміністрування бази даних — дозволив зосередити зусилля на розробці функціональності застосунку, а не на підтримці інфраструктури, що є типовим і рекомендованим рішенням для сучасних проєктів на Next.js.

@@ -1,9 +1,9 @@
 'use client';
-import { Button } from '@/src/components/ui/button';
-import { Input } from '@/src/components/ui/input';
-import { useGetPostById, useUpdatePost } from '@/src/lib/api/admin/post/api-get-posts';
-import { useCreatePost } from '@/src/lib/api/admin/post/new/api-new-post';
-import { generateSlug } from '@/src/lib/utils/slugify';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useGetPostById, useUpdatePost } from '@/lib/api/admin/post/api-get-posts';
+import { useCreatePost } from '@/lib/api/admin/post/api-get-posts';
+import { generateSlug } from '@/lib/utils/slugify';
 import {
   closestCenter,
   DndContext,
@@ -24,11 +24,13 @@ import { GripVertical, LayoutTemplate, Trash2, Wand2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 import AsideMenu from './components/AsideMenu';
 import { ActiveComponent, PostFormValues, useConstructorLogic } from './hooks/useConstructorLogic';
 
 interface PostConstructorProps {
   id?: string;
+  defaultPageId?: string;
 }
 
 interface SortableItemProps {
@@ -95,12 +97,12 @@ const EmptyState = () => (
     <div className="mb-4 rounded-2xl bg-slate-100 p-5">
       <LayoutTemplate className="h-8 w-8 text-slate-400" />
     </div>
-    <p className="text-sm font-medium text-slate-600">Холст пустой</p>
-    <p className="mt-1 text-xs text-slate-400">Добавьте блоки из панели слева</p>
+    <p className="text-sm font-medium text-slate-600">Полотно порожнє</p>
+    <p className="mt-1 text-xs text-slate-400">Додайте блоки з панелі зліва</p>
   </div>
 );
 
-export const PostConstructor = ({ id }: PostConstructorProps) => {
+export const PostConstructor = ({ id, defaultPageId }: PostConstructorProps) => {
   const { data: existingPost, isLoading: postLoading } = useGetPostById(id ?? '');
   const router = useRouter();
   const {
@@ -116,12 +118,11 @@ export const PostConstructor = ({ id }: PostConstructorProps) => {
     getFormData,
     handleTitleChange,
     handleSlugChange,
-  } = useConstructorLogic(existingPost);
+  } = useConstructorLogic(existingPost, defaultPageId);
 
-  const { mutateAsync: createPost, isPending: creating, isSuccess: isCreated } = useCreatePost();
-  const { mutateAsync: updatePost, isPending: updating, isSuccess: isUpdated } = useUpdatePost();
+  const { mutateAsync: createPost, isPending: creating } = useCreatePost();
+  const { mutateAsync: updatePost, isPending: updating } = useUpdatePost();
   const isPending = creating || updating;
-  const isSuccess = isCreated || isUpdated;
 
   const titleValue = useWatch({ control: form.control, name: 'title', defaultValue: '' });
   const slugValue = useWatch({ control: form.control, name: 'slug', defaultValue: '' });
@@ -144,14 +145,17 @@ export const PostConstructor = ({ id }: PostConstructorProps) => {
     const data = getFormData();
     if (id) {
       await updatePost({ id, ...data });
+      toast.success('Пост оновлено');
+      router.back();
     } else {
       await createPost(data);
+      toast.success('Пост створено');
+      router.push('/admin/posts');
     }
-    if (isSuccess) router.back();
   });
 
   if (id && postLoading) {
-    return <p className="text-sm text-slate-400 p-4">Загрузка поста...</p>;
+    return <p className="text-sm text-slate-400 p-4">Завантаження поста...</p>;
   }
 
   return (
@@ -159,10 +163,10 @@ export const PostConstructor = ({ id }: PostConstructorProps) => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-widest text-slate-400">
-            {id ? 'Редактирование' : 'Создание'}
+            {id ? 'Редагування' : 'Створення'}
           </p>
           <h1 className="mt-0.5 text-2xl font-semibold text-slate-800">
-            {id ? 'Редактировать пост' : 'Новый пост'}
+            {id ? 'Редагувати пост' : 'Новий пост'}
           </h1>
         </div>
         <Button
@@ -171,7 +175,7 @@ export const PostConstructor = ({ id }: PostConstructorProps) => {
           onClick={handlePublish}
           disabled={isPending}
         >
-          {isPending ? 'Сохранение...' : id ? 'Сохранить' : 'Опубликовать'}
+          {isPending ? 'Збереження...' : id ? 'Зберегти' : 'Опублікувати'}
         </Button>
       </div>
 
@@ -190,7 +194,7 @@ export const PostConstructor = ({ id }: PostConstructorProps) => {
             <Input
               value={titleValue}
               onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Заголовок поста..."
+              placeholder="Заголовок допису..."
               className="text-2xl font-bold border-none shadow-none focus-visible:ring-0 px-0 placeholder:text-slate-300 h-auto"
             />
             <div className="flex justify-start items-center gap-1.5 text-xs text-slate-400">

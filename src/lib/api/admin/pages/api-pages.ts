@@ -1,6 +1,6 @@
 import { Page } from '@/generated/prisma/client';
 import { axiosInstance } from '@/lib/axios';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export type GetPagesResponse = Page;
 
@@ -42,3 +42,19 @@ export const useGetPageBySlug = (slug: string) =>
     queryFn: () => getPageBySlug(slug),
     enabled: !!slug,
   });
+
+export type PageBlock = { type: string; value: string };
+export type UpdatePageInput = { id: string; title: string; slug: string; status: string; content?: PageBlock[] };
+
+const updatePage = async ({ id, ...data }: UpdatePageInput): Promise<Page> => {
+  const response = await axiosInstance.patch<Page>(`/pages/${id}`, data);
+  return response.data;
+};
+
+export const useUpdatePage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updatePage,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['pages'] }),
+  });
+};

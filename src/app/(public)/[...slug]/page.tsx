@@ -10,6 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const fullSlug = slug.join('/');
   const page = await getContent(fullSlug);
+  console.log(page);
   return { title: page?.data.title ?? fullSlug };
 }
 

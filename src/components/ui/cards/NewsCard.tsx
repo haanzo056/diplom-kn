@@ -4,9 +4,9 @@ import { Badge } from '../badge';
 import { Button } from '../button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../card';
 
-export const NewsCard = ({ news }: { news: any }) => {
+export const NewsCard = ({ news, className }: { news: any; className?: string }) => {
   return (
-    <Card className="flex flex-col overflow-hidden hover:shadow-md transition-shadow duration-200 p-0">
+    <Card className={`flex flex-col overflow-hidden hover:shadow-md transition-shadow duration-200 p-0 ${className ?? ''}`}>
       <div className="relative w-full h-56 shrink-0 bg-slate-100">
         {news.image ? (
           <Image src={news.image} alt={news.title} fill className="object-cover" />

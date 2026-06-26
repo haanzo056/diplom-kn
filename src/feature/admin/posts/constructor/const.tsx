@@ -1,13 +1,13 @@
-import { Button } from '@/src/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/src/components/ui/carousel';
-import { Input } from '@/src/components/ui/input';
-import { Textarea } from '@/src/components/ui/textarea';
+} from '@/components/ui/carousel';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   AlertCircle,
   Code,
@@ -22,6 +22,7 @@ import {
   Video,
 } from 'lucide-react';
 import React from 'react';
+import TextField from './components/TextField/TextField';
 
 export type PostComponent = {
   key: string;
@@ -41,7 +42,7 @@ export const POST_COMPONENTS: PostComponent[] = [
       <Input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Введите заголовок..."
+        placeholder="Введіть заголовок..."
         className="text-2xl font-bold border-none shadow-none focus-visible:ring-0 px-0 placeholder:text-slate-300 h-auto"
       />
     ),
@@ -51,27 +52,20 @@ export const POST_COMPONENTS: PostComponent[] = [
     name: 'text',
     label: 'Текст',
     icon: <Type className="w-4 h-4" />,
-    component: (value, onChange) => (
-      <Textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Начните писать текст..."
-        className="resize-none border-none shadow-none focus-visible:ring-0 px-0 text-lg text-slate-700 min-h-[100px]"
-      />
-    ),
+    component: (value, onChange) => <TextField value={value} onChange={onChange} />,
   },
   {
     key: '2',
     name: 'image',
-    label: 'Изображение',
+    label: 'Зображення',
     icon: <ImageIcon className="w-4 h-4" />,
     component: (_value, _onChange) => (
       <div className="w-full border-2 border-dashed border-slate-200 rounded-xl p-8 flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-blue-400 transition-colors cursor-pointer group">
         <div className="bg-white p-3 rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
           <UploadCloud className="w-6 h-6 text-blue-500" />
         </div>
-        <p className="font-medium text-slate-700">Нажмите, чтобы загрузить картинку</p>
-        <p className="text-sm mt-1">SVG, PNG, JPG или GIF (макс. 5MB)</p>
+        <p className="font-medium text-slate-700">Натисніть, щоб завантажити зображення</p>
+        <p className="text-sm mt-1">SVG, PNG, JPG або GIF (макс. 5MB)</p>
       </div>
     ),
   },
@@ -80,59 +74,70 @@ export const POST_COMPONENTS: PostComponent[] = [
     name: 'quote',
     label: 'Цитата',
     icon: <Quote className="w-4 h-4" />,
-    component: (value, onChange) => (
-      <div className="flex gap-4 border-l-4 border-blue-500 bg-slate-50 p-4 rounded-r-lg">
-        <Quote className="w-6 h-6 text-blue-400 shrink-0 opacity-50" />
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Введите цитату..."
-          className="resize-none border-none shadow-none focus-visible:ring-0 p-0 bg-transparent text-lg italic text-slate-700 placeholder:text-slate-400"
-        />
-      </div>
-    ),
+    component: (value, onChange) => <TextField value={value} onChange={onChange} variant="quote" />,
   },
   {
     key: '4',
     name: 'video',
-    label: 'Видео',
+    label: 'Відео',
     icon: <Video className="w-4 h-4" />,
-    component: (value, onChange) => (
-      <div className="w-full bg-slate-100 rounded-xl p-4 flex items-center gap-4 border border-slate-200">
-        <div className="bg-red-100 text-red-600 p-2 rounded-lg">
-          <Video className="w-5 h-5" />
+    component: (value, onChange) => {
+      const getEmbedUrl = (url: string) => {
+        try {
+          const u = new URL(url);
+          if (u.hostname.includes('youtube.com')) {
+            const id = u.searchParams.get('v');
+            if (id) return `https://www.youtube.com/embed/${id}`;
+          }
+          if (u.hostname === 'youtu.be') {
+            return `https://www.youtube.com/embed${u.pathname}`;
+          }
+          if (u.hostname.includes('vimeo.com')) {
+            const match = u.pathname.match(/\/(\d+)/);
+            if (match) return `https://player.vimeo.com/video/${match[1]}`;
+          }
+        } catch { /* ignore */ }
+        return null;
+      };
+      const embedUrl = value ? getEmbedUrl(value) : null;
+      return (
+        <div className="space-y-3">
+          <div className="w-full bg-slate-100 rounded-xl p-3 flex items-center gap-3 border border-slate-200">
+            <div className="bg-red-100 text-red-600 p-2 rounded-lg shrink-0">
+              <Video className="w-4 h-4" />
+            </div>
+            <Input
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="Вставте посилання на YouTube або Vimeo..."
+              className="bg-white border-none shadow-sm flex-1"
+            />
+          </div>
+          {embedUrl && (
+            <div className="aspect-video rounded-xl overflow-hidden border border-slate-200">
+              <iframe
+                src={embedUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
         </div>
-        <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Вставьте ссылку на YouTube или Vimeo..."
-          className="bg-white border-none shadow-sm flex-1"
-        />
-        <Button variant="secondary">Добавить</Button>
-      </div>
-    ),
+      );
+    },
   },
   {
     key: '5',
     name: 'code',
     label: 'Код',
     icon: <Code className="w-4 h-4" />,
-    component: (value, onChange) => (
-      <div className="bg-slate-900 rounded-xl p-4 font-mono text-sm relative">
-        <div className="absolute top-3 right-3 text-slate-500 text-xs font-sans">JavaScript</div>
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="console.log('Hello World');"
-          className="resize-none border-none shadow-none focus-visible:ring-0 p-0 bg-transparent text-slate-50 placeholder:text-slate-600 min-h-[120px]"
-        />
-      </div>
-    ),
+    component: (value, onChange) => <TextField value={value} onChange={onChange} variant="code" />,
   },
   {
     key: '6',
     name: 'warning',
-    label: 'Внимание',
+    label: 'Увага',
     icon: <AlertCircle className="w-4 h-4" />,
     component: (value, onChange) => (
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
@@ -140,7 +145,7 @@ export const POST_COMPONENTS: PostComponent[] = [
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Текст важного примечания..."
+          placeholder="Текст важливого зауваження..."
           className="resize-none border-none shadow-none focus-visible:ring-0 p-0 bg-transparent text-amber-900 placeholder:text-amber-700/50 min-h-[60px]"
         />
       </div>
@@ -150,6 +155,7 @@ export const POST_COMPONENTS: PostComponent[] = [
     key: '7',
     name: 'carousel',
     label: 'Карусель',
+
     icon: <GalleryHorizontal className="w-4 h-4" />,
     component: (_value, _onChange) => (
       <div className="relative px-10">
@@ -162,7 +168,7 @@ export const POST_COMPONENTS: PostComponent[] = [
                     <UploadCloud className="w-5 h-5 text-blue-400" />
                   </div>
                   <p className="text-sm font-medium text-slate-500">Слайд {i}</p>
-                  <p className="text-xs mt-1 text-slate-400">Нажмите для загрузки</p>
+                  <p className="text-xs mt-1 text-slate-400">Натисніть для завантаження</p>
                 </div>
               </CarouselItem>
             ))}
@@ -176,7 +182,7 @@ export const POST_COMPONENTS: PostComponent[] = [
   {
     key: '8',
     name: 'divider',
-    label: 'Разделитель',
+    label: 'Розділювач',
     icon: <Minus className="w-4 h-4" />,
     component: (_value, _onChange) => (
       <div className="flex items-center gap-3 py-2">
@@ -209,7 +215,7 @@ export const POST_COMPONENTS: PostComponent[] = [
               <Input
                 value={items[i] ?? ''}
                 onChange={(e) => updateItem(i, e.target.value)}
-                placeholder={`Пункт списка ${i + 1}...`}
+                placeholder={`Пункт списку ${i + 1}...`}
                 className="border-none shadow-none focus-visible:ring-0 px-0 text-slate-700 placeholder:text-slate-300 h-8"
               />
             </div>

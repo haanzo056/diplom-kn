@@ -1,7 +1,8 @@
-import { PostDetail } from '@/src/lib/api/admin/post/api-get-posts';
-import { PostBlock, PostCategory } from '@/src/lib/api/admin/post/new/api-new-post';
-import { Page } from '@/src/types/types';
-import { useEffect, useState } from 'react';
+import { PostDetail } from '@/lib/api/admin/post/api-get-posts';
+import { PostBlock, PostCategory } from '@/lib/api/admin/post/api-get-posts';
+import { Page } from '@/generated/prisma/client';
+import { generateSlug } from '@/lib/utils/slugify';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { POST_COMPONENTS, PostComponent } from '../const';
 
@@ -18,31 +19,24 @@ export type PostFormValues = {
 
 export type ActiveComponent = PostComponent & { instanceKey: string };
 
-const toSlug = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-
-export const useConstructorLogic = (initialData?: PostDetail) => {
+export const useConstructorLogic = (initialData?: PostDetail, defaultPageId?: string | null, defaultCategory?: PostCategory) => {
   const form = useForm<PostFormValues>({
     defaultValues: {
       title: initialData?.title ?? '',
       slug: initialData?.slug ?? '',
       excerpt: initialData?.excerpt ?? '',
       image: initialData?.image ?? '',
-      status: initialData?.status ?? 'DRAFT',
-      category: initialData?.category ?? 'OTHER',
+      status: initialData?.status ?? 'PUBLISHED',
+      category: initialData?.category ?? defaultCategory ?? 'OTHER',
     },
   });
 
   const [activeComponents, setActiveComponents] = useState<ActiveComponent[]>([]);
   const [pages, setPages] = useState<Page[]>([]);
-  const [selectedPageId, setSelectedPageId] = useState<string | null>(initialData?.pageId ?? null);
+  const [selectedPageId, setSelectedPageId] = useState<string | null>(initialData?.pageId ?? defaultPageId ?? null);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const slugDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     fetch('/api/pages')
@@ -76,13 +70,16 @@ export const useConstructorLogic = (initialData?: PostDetail) => {
   const handleTitleChange = (value: string) => {
     form.setValue('title', value);
     if (!slugManuallyEdited) {
-      form.setValue('slug', toSlug(value));
+      if (slugDebounceRef.current) clearTimeout(slugDebounceRef.current);
+      slugDebounceRef.current = setTimeout(() => {
+        form.setValue('slug', generateSlug(value));
+      }, 400);
     }
   };
 
   const handleSlugChange = (value: string) => {
     setSlugManuallyEdited(true);
-    form.setValue('slug', toSlug(value));
+    form.setValue('slug', generateSlug(value));
   };
 
   const reorderComponents = (fromIndex: number, toIndex: number) => {

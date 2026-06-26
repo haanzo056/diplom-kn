@@ -14,15 +14,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, FileText, Newspaper, Navigation, Image as ImageIcon, Settings } from 'lucide-react';
+import { LayoutDashboard, Newspaper, BookOpen, ScrollText, Compass, Images, SlidersHorizontal, LogOut } from 'lucide-react';
+import { logout } from '@/app/actions/auth';
 
 const navLinks = [
   { href: '/admin', label: 'Дашборд', icon: LayoutDashboard },
-  { href: '/admin/pages', label: 'Сторінки', icon: FileText },
-  { href: '/admin/posts', label: 'Пости', icon: Newspaper },
-  { href: '/admin/navigation', label: 'Навігація', icon: Navigation },
-  { href: '/admin/media', label: 'Медіатека', icon: ImageIcon },
-  { href: '/admin/settings', label: 'Налаштування', icon: Settings },
+  { href: '/admin/news', label: 'Новини', icon: Newspaper },
+  { href: '/admin/pages', label: 'Сторінки', icon: BookOpen },
+  { href: '/admin/posts', label: 'Пости', icon: ScrollText },
+  { href: '/admin/navigation', label: 'Навігація', icon: Compass },
+  { href: '/admin/media', label: 'Медіатека', icon: Images },
+  { href: '/admin/settings', label: 'Налаштування', icon: SlidersHorizontal },
 ];
 
 function AdminSidebar() {
@@ -77,10 +79,14 @@ function AdminSidebar() {
           <div className="size-8 rounded-full bg-slate-600 flex items-center justify-center shrink-0">
             <span className="text-xs font-bold text-slate-100">А</span>
           </div>
-          <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
+          <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden flex-1">
             <span className="text-sm font-medium text-slate-100 truncate">Адміністратор</span>
-            <span className="text-xs text-slate-400 truncate">admin@site.com</span>
           </div>
+          <form action={logout}>
+            <button type="submit" className="text-slate-400 hover:text-slate-100 transition-colors group-data-[collapsible=icon]:hidden" title="Вийти">
+              <LogOut className="size-4" />
+            </button>
+          </form>
         </div>
       </SidebarFooter>
     </Sidebar>

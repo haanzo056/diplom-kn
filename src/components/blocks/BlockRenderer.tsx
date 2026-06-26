@@ -1,55 +1,101 @@
-type Block =
-  | { type: "paragraph"; text: string }
-  | { type: "heading"; level: 1 | 2 | 3; text: string }
-  | { type: "quote"; text: string; author?: string }
-  | { type: "image"; url: string; alt?: string; caption?: string }
-  | { type: "divider" }
-  | { type: "list"; style: "ordered" | "unordered"; items: string[] };
+import { TiptapViewer } from './TiptapViewer';
 
-function renderBlock(block: Block, index: number) {
+export type PageBlock = { type: string; value: string };
+
+function getYoutubeEmbedUrl(raw: string): string | null {
+  const url = raw.trim();
+  if (!url) return null;
+  const full = url.startsWith('http') ? url : `https://${url}`;
+  try {
+    const u = new URL(full);
+    if (u.hostname.includes('youtube.com')) {
+      const id = u.searchParams.get('v');
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+    if (u.hostname === 'youtu.be') {
+      return `https://www.youtube.com/embed${u.pathname}`;
+    }
+    if (u.hostname.includes('vimeo.com')) {
+      const match = u.pathname.match(/\/(\d+)/);
+      if (match) return `https://player.vimeo.com/video/${match[1]}`;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+function renderBlock(block: PageBlock, index: number) {
   switch (block.type) {
-    case "heading": {
-      const Tag = `h${block.level}` as "h1" | "h2" | "h3";
-      const sizes = { 1: "text-4xl", 2: "text-2xl", 3: "text-xl" };
+    case 'heading':
       return (
-        <Tag key={index} className={`${sizes[block.level]} font-bold text-slate-900 mt-8 mb-3`}>
-          {block.text}
-        </Tag>
+        <h2 key={index} className="text-2xl font-bold text-slate-900 mt-8 mb-3">
+          {block.value}
+        </h2>
+      );
+
+    case 'text':
+      return <TiptapViewer key={index} value={block.value} />;
+
+    case 'quote':
+      return <TiptapViewer key={index} value={block.value} variant="quote" />;
+
+    case 'code':
+      return <TiptapViewer key={index} value={block.value} variant="code" />;
+
+    case 'warning':
+      return (
+        <div key={index} className="bg-amber-50 border border-amber-200 rounded-xl p-4 my-4 flex gap-3">
+          <span className="text-amber-600 text-lg shrink-0">⚠</span>
+          <p className="text-amber-900 text-sm leading-relaxed">{block.value}</p>
+        </div>
+      );
+
+    case 'divider':
+      return (
+        <div key={index} className="flex items-center gap-3 my-8">
+          <div className="flex-1 h-px bg-slate-200" />
+          <div className="flex gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+          </div>
+          <div className="flex-1 h-px bg-slate-200" />
+        </div>
+      );
+
+    case 'list': {
+      const items = block.value ? block.value.split('\n').filter(Boolean) : [];
+      if (items.length === 0) return null;
+      return (
+        <ul key={index} className="list-disc pl-6 space-y-1 my-4 text-slate-700">
+          {items.map((item, i) => <li key={i}>{item}</li>)}
+        </ul>
       );
     }
-    case "paragraph":
+
+    case 'video': {
+      const embedUrl = getYoutubeEmbedUrl(block.value);
+      if (!embedUrl) return null;
       return (
-        <p key={index} className="text-slate-700 leading-relaxed mb-4">
-          {block.text}
-        </p>
+        <div key={index} className="my-6 aspect-video rounded-xl overflow-hidden border border-slate-200">
+          <iframe
+            src={embedUrl}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
       );
-    case "quote":
-      return (
-        <blockquote key={index} className="border-l-4 border-slate-300 pl-5 my-6 italic text-slate-600">
-          <p className="mb-1">{block.text}</p>
-          {block.author && <cite className="text-sm not-italic text-slate-400">— {block.author}</cite>}
-        </blockquote>
-      );
-    case "image":
+    }
+
+    case 'image':
+      if (!block.value) return null;
       return (
         <figure key={index} className="my-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={block.url} alt={block.alt ?? ""} className="w-full rounded-md object-cover" />
-          {block.caption && <figcaption className="text-sm text-slate-400 text-center mt-2">{block.caption}</figcaption>}
+          <img src={block.value} alt="" className="w-full rounded-xl object-cover" />
         </figure>
       );
-    case "divider":
-      return <hr key={index} className="my-8 border-slate-200" />;
-    case "list": {
-      const Tag = block.style === "ordered" ? "ol" : "ul";
-      return (
-        <Tag key={index} className={`my-4 pl-6 space-y-1 text-slate-700 ${block.style === "ordered" ? "list-decimal" : "list-disc"}`}>
-          {block.items.map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </Tag>
-      );
-    }
+
     default:
       return null;
   }
@@ -57,5 +103,5 @@ function renderBlock(block: Block, index: number) {
 
 export function BlockRenderer({ blocks }: { blocks: unknown }) {
   if (!Array.isArray(blocks)) return null;
-  return <>{(blocks as Block[]).map((block, i) => renderBlock(block, i))}</>;
+  return <>{(blocks as PageBlock[]).map((block, i) => renderBlock(block, i))}</>;
 }

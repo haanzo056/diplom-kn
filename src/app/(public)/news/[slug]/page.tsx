@@ -1,4 +1,4 @@
-import NewsPostPage from '@/src/features/news/newsPost';
+import NewsPostPage from '@/feature/news/newsPost';
 import type { Metadata } from 'next';
 
 interface Props {

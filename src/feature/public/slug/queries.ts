@@ -1,6 +1,22 @@
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 
+export const getPagePosts = cache(async (pageId: string) => {
+  return prisma.post.findMany({
+    where: { pageId, status: "PUBLISHED" },
+    orderBy: { publishedAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      category: true,
+      publishedAt: true,
+      image: { select: { url: true } },
+    },
+  });
+});
+
 export const getContent = cache(async (slug: string) => {
   const page = await prisma.page.findFirst({
     where: { slug, status: "PUBLISHED" },

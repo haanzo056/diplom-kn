@@ -1,53 +1,41 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-// import { loginAdmin } from './actions'; // Это серверное действие мы создадим ниже
-
+import Image from 'next/image';
+import { LoginForm } from './components/LoginForm';
 export const LoginPage = () => {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    // Вызываем серверную функцию проверки пароля
-    const result = {};
-
-    if (result.success) {
-      router.push('/admin/news'); // Если ок, пускаем в админку
-    } else {
-      setError('Невірний пароль!'); // Украинский, как договаривались
-    }
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 w-full max-w-sm"
-      >
-        <h1 className="text-2xl font-bold text-slate-900 mb-6 text-center">Вхід в адмін-панель</h1>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      {/* Left panel */}
+      <div className="hidden lg:flex flex-col justify-between bg-[#0f172a] px-12 py-14">
+        <div className="flex items-center gap-3">
+          <Image src="/logo.png" alt="Logo" width={50} height={50} />
+          <span className="text-sm font-semibold text-white tracking-wide">Адмін-панель</span>
+        </div>
 
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Введіть пароль..."
-          className="w-full mb-4 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-        />
+        <div className="flex flex-col gap-4">
+          <p className="text-3xl font-semibold text-white leading-snug">
+            Керування
+            <br />
+            контентом сайту
+          </p>
+          <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
+            Сторінки, пости, медіафайли та навігація — все в одному місці.
+          </p>
+        </div>
 
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        <p className="text-xs text-slate-600">© {new Date().getFullYear()} ВСП ФКЗІ ДУІТЗ</p>
+      </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Увійти
-        </button>
-      </form>
+      {/* Right panel */}
+      <div className="flex flex-col items-center justify-center px-6 py-14 bg-slate-50">
+        {/* Mobile header */}
+
+        <div className="w-full max-w-sm bg-white rounded-xl border border-slate-200 shadow-sm px-8 py-10 flex flex-col gap-7">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xl font-semibold text-slate-900">Вхід</h1>
+            <p className="text-sm text-slate-500">Введіть ваші дані для доступу</p>
+          </div>
+          <LoginForm />
+        </div>
+      </div>
     </div>
   );
 };

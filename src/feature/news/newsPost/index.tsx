@@ -1,9 +1,9 @@
 'use client';
 
-import { useGetPostBySlug } from '@/src/lib/api/admin/post/api-get-post';
+import { useGetPostBySlug } from '@/lib/api/admin/post/api-get-posts';
+import { BlockRenderer } from '@/components/blocks/BlockRenderer';
 import { Calendar, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import PostBlockRenderer from '../../../helpers/PostBlockRenderer';
 import SideBar from '../allNews/components/SideBar';
 
 const NewsPostPage = ({ slug }: { slug: string }) => {
@@ -68,7 +68,7 @@ const NewsPostPage = ({ slug }: { slug: string }) => {
             )}
 
             <article>
-              <PostBlockRenderer blocks={post.blocks} />
+              <BlockRenderer blocks={post.blocks} />
             </article>
           </main>
 

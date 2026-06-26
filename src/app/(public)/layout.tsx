@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { PublicHeader } from '@/components/layouts/public-header';
 import { getNavigation } from '@/feature/public/navigation/queries';
 

@@ -43,10 +43,7 @@ export const HomePage = async () => {
         <div className="max-w-[1240px] mx-auto flex gap-[20px]" style={{ height: '560px' }}>
           {/* Left column: tall top + short bottom */}
           <div className="flex-1 flex flex-col gap-[17px]">
-            <div
-              className="relative overflow-hidden rounded-tl-[24px]"
-              style={{ height: '365px' }}
-            >
+            <div className="relative overflow-hidden rounded-tl-[24px]" style={{ height: '365px' }}>
               <Image
                 src="/images/bg/maybutne.png"
                 alt="Твоє майбутнє"
@@ -127,7 +124,12 @@ export const HomePage = async () => {
               className="relative overflow-hidden rounded-tr-[24px] flex items-center justify-center transition-all duration-300 hover:brightness-110"
               style={{ height: '178px' }}
             >
-              <Image src="/images/bg/rulse.png" alt="Правила прийому" fill className="object-cover" />
+              <Image
+                src="/images/bg/rulse.png"
+                alt="Правила прийому"
+                fill
+                className="object-cover"
+              />
               <div className="absolute inset-0 bg-black/20" />
               <span
                 className="relative"
@@ -150,7 +152,12 @@ export const HomePage = async () => {
               className="relative overflow-hidden flex items-center justify-center transition-all duration-300 hover:brightness-110"
               style={{ height: '178px' }}
             >
-              <Image src="/images/bg/special.png" alt="Спеціальності" fill className="object-cover" />
+              <Image
+                src="/images/bg/special.png"
+                alt="Спеціальності"
+                fill
+                className="object-cover"
+              />
               <span
                 className="relative"
                 style={{
@@ -214,7 +221,7 @@ export const HomePage = async () => {
         >
           Спеціальності
         </h2>
-        <div className="flex gap-[32px] px-[100px]">
+        <div className="flex gap-[32px] px-[100px] justify-center">
           {SPECIALTIES.map((spec) => (
             <Link
               key={spec.code}
@@ -236,10 +243,24 @@ export const HomePage = async () => {
                 }}
               />
               <div className="relative flex flex-col gap-[8px] text-center text-white w-full">
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: 'normal' }}>
+                <p
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    lineHeight: 'normal',
+                  }}
+                >
                   {spec.code}
                 </p>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '20px', fontWeight: 600, lineHeight: 'normal' }}>
+                <p
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '20px',
+                    fontWeight: 600,
+                    lineHeight: 'normal',
+                  }}
+                >
                   «{spec.name}»
                 </p>
               </div>
@@ -270,26 +291,19 @@ export const HomePage = async () => {
             Новини відсутні
           </p>
         ) : (
-          <div className="flex flex-wrap gap-[32px] px-[100px]">
+          <div className="grid grid-cols-3 gap-[32px] px-[100px]">
             {posts.map((post) => (
               <Link
                 key={post.id}
                 href={`/news/${post.slug}`}
                 className="bg-white rounded-[24px] overflow-hidden flex flex-col"
                 style={{
-                  width: '392px',
-                  flexShrink: 0,
                   boxShadow: '0px 0px 2px rgba(29,29,29,0.06)',
                 }}
               >
                 <div className="relative shrink-0" style={{ height: '260px' }}>
                   {post.image?.url ? (
-                    <Image
-                      src={post.image.url}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={post.image.url} alt={post.title} fill className="object-cover" />
                   ) : (
                     <div
                       className="w-full h-full flex items-center justify-center"
